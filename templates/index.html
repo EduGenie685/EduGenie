@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGenie</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <h1>Welcome to EduGenie 🧠✨</h1>
+    <p>Your personal AI tutor for learning support!</p>
+
+    <!-- 1. Q&A Section -->
+    <div id="qaSection">
+        <label><strong>Ask EduGenie a Question:</strong></label><br><br>
+        <input type="text" id="question" placeholder="Why is the sky blue?" required>
+        <button type="button" onclick="getAnswer()">Get Answer</button>
+    </div>
+    <div id="qaResult" class="output"></div>
+
+    <br><hr><br>
+
+    <!-- 2. Explanation Section -->
+    <div id="explainSection">
+        <label><strong>Need an Explanation?</strong></label><br><br>
+        <input type="text" id="topic" placeholder="Photosynthesis" required>
+        <button type="button" onclick="getExplanation()">Explain</button>
+    </div>
+    <div id="explanationResult" class="output"></div>
+
+    <br><hr><br>
+
+    <!-- 3. Summary Section -->
+    <div id="summarySection">
+        <label><strong>Summarize a Paragraph:</strong></label><br><br>
+        <input type="text" id="summaryText" placeholder="Paste long content to summarize" required>
+        <button type="button" onclick="getSummary()">Summarize</button>
+    </div>
+    <div id="summaryResult" class="output"></div>
+
+    <br><hr><br>
+
+    <!-- 4. Quiz Section -->
+    <div id="quizSection">
+        <label><strong>Generate a Quiz:</strong></label><br><br>
+        <input type="text" id="quizText" placeholder="Solar System" required>
+        <button type="button" onclick="getQuiz()">Generate Quiz</button>
+    </div>
+    <div id="quizResult" class="output"></div>
+
+    <!-- JavaScript Functions -->
+    <script>
+    async function getAnswer() {
+        const question = document.getElementById('question').value;
+        const resultDiv = document.getElementById('qaResult');
+        if (!question) return alert("Please enter a question");
+        
+        resultDiv.innerHTML = "Processing...";
+        try {
+            const response = await fetch(`/qa?question=${encodeURIComponent(question)}`);
+            const data = await response.json();
+            resultDiv.innerHTML = data.answer || JSON.stringify(data);
+        } catch (err) {
+            resultDiv.innerHTML = "Error loading response.";
+        }
+    }
+
+    async function getExplanation() {
+        const topic = document.getElementById('topic').value;
+        const resultDiv = document.getElementById('explanationResult');
+        if (!topic) return alert("Please enter a topic");
+
+        resultDiv.innerHTML = "Processing...";
+        try {
+            const response = await fetch('/explain/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: topic })
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = data.explanation || data.error || JSON.stringify(data);
+        } catch (err) {
+            resultDiv.innerHTML = "Error loading explanation.";
+        }
+    }
+
+    async function getSummary() {
+        const text = document.getElementById('summaryText').value;
+        const resultDiv = document.getElementById('summaryResult');
+        if (!text) return alert("Please enter text");
+
+        resultDiv.innerHTML = "Processing...";
+        try {
+            const response = await fetch('/summarize/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = data.summary || data.error || JSON.stringify(data);
+        } catch (err) {
+            resultDiv.innerHTML = "Error loading summary.";
+        }
+    }
+
+    async function getQuiz() {
+        const text = document.getElementById('quizText').value;
+        const resultDiv = document.getElementById('quizResult');
+        if (!text) return alert("Please enter text for quiz");
+
+        resultDiv.innerHTML = "Processing...";
+        try {
+            const response = await fetch('/quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = data.quiz || data.error || JSON.stringify(data);
+        } catch (err) {
+            resultDiv.innerHTML = "Error generating quiz.";
+        }
+    }
+    </script>
+</body>
+</html>
